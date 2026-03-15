@@ -5,3 +5,4 @@ scikit-learn
 python-multipart
 google-generativeai
 python-dotenv
+python-docx
