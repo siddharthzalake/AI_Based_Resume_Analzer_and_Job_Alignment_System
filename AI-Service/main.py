@@ -3,7 +3,7 @@ import pdfplumber
 from docx import Document
 
 from scoring.keywordMatch import keyword_match_score
-from scoring.semanticSimilarity import semantic_similarity
+
 from scoring.atsScore import ats_score
 from llm.gemeni_service import get_gemini_feedback , get_gemini_feedback_resume_only
 from utils.resume_sections import split_resume_sections
@@ -58,10 +58,7 @@ async def analyze_resume(
             jobDescription
         )
 
-        semantic_rule = semantic_similarity(
-            resume_text,
-            jobDescription
-        )
+
 
         ats_rule = ats_score(resume_text)
 
@@ -82,10 +79,8 @@ async def analyze_resume(
             2
         )
 
-        semantic_final = round(
-            0.3 * semantic_rule + 0.7 * semantic_llm,
-            2
-        )
+        semantic_final = semantic_llm
+           
 
         ats_final = round(
             0.6 * ats_rule + 0.4 * ats_llm,
