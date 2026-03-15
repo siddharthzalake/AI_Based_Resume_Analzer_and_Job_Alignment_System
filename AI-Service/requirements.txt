@@ -1,8 +1,8 @@
 fastapi
 uvicorn
 pdfplumber
-scikit-learn
-python-multipart
-google-generativeai
-python-dotenv
 python-docx
+python-multipart
+python-dotenv
+google-genai
+pdfminer.six
