@@ -7,3 +7,8 @@ python-dotenv
 google-genai
 pdfminer.six
 scikit-learn
+numpy
+scipy
+nltk
+pydantic
+requests
