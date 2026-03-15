@@ -10,8 +10,8 @@ import Analyze from "./pages/AnalyzePage";
 import Result from "./pages/ResultPage";
 import History from "./pages/HistoryPage";
 
-import Navbar from "./components/navbar";
-import Footer from "./components/footer";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 
 export default function App() {
   return (
