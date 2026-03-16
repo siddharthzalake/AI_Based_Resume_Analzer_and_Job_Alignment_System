@@ -8,10 +8,10 @@ This document describes all backend and AI service APIs used in the system.
 ## 🌐 Base URLs
 
 ### Backend (Node.js Express)
-
+https://nodebackend-6xec.onrender.com
 
 ### AI Service (FastAPI)
-
+https://aiservice-sx48.onrender.com
 
 ---
 
