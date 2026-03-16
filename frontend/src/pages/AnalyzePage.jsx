@@ -188,7 +188,7 @@ export default function Analyze() {
 
                  
                   <p className="text-xs text-gray-400 mt-1 font-mono">
-                    {file ? `${(file.size / 1024).toFixed(1)} KB` : "PDF only (Max 10MB)"}
+                    {file ? `${(file.size / 1024).toFixed(1)} KB` : "PDF or Docx only (Max 10MB)"}
                   </p>
                 </div>
               </div>
