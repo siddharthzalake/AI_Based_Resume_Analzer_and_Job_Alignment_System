@@ -105,7 +105,7 @@ export const analyzeResume = async (req, res) => {
       formData,
       {
         headers: formData.getHeaders(),
-        timeout: 60000
+        timeout: 240000 // 4 minutes
       }
     );
 
@@ -188,7 +188,7 @@ export const analyzeResumeOnly = async (req, res) => {
       formData,
       {
         headers: formData.getHeaders(),
-        timeout: 60000
+        timeout: 240000 // 4 minutes
       }
     );
 
