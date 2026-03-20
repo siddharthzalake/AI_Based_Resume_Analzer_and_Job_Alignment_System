@@ -55,11 +55,19 @@ export default function Result() {
             {/* Controlled height for mobile so it doesn't scroll forever */}
             <div className="border border-gray-200 rounded-lg overflow-auto bg-gray-50 h-[450px] lg:h-[80vh]">
               {analysis.previewImageUrl ? (
-                <img
-                  src={analysis.previewImageUrl}
-                  alt="Resume"
-                  className="w-full h-auto min-h-full object-contain"
-                />
+                analysis.previewImageUrl.includes("docs.google.com") ? (
+                  <iframe
+                    src={analysis.previewImageUrl}
+                    title="Resume Preview"
+                    className="w-full h-full border-0"
+                  />
+                ) : (
+                  <img
+                    src={analysis.previewImageUrl}
+                    alt="Resume"
+                    className="w-full h-auto min-h-full object-contain"
+                  />
+                )
               ) : (
                 <div className="flex flex-col items-center justify-center h-full text-gray-400">
                   <FileText size={40} strokeWidth={1} />
@@ -104,27 +112,27 @@ export default function Result() {
 
           {/* ANALYSIS CONTENT SECTIONS */}
           <div className="space-y-6">
-            <AnalysisSection 
-              title="Missing Key Skills" 
-              icon={<AlertCircle size={20} />} 
-              colorClass="text-red-600" 
-              data={analysis.missingSkills} 
+            <AnalysisSection
+              title="Missing Key Skills"
+              icon={<AlertCircle size={20} />}
+              colorClass="text-red-600"
+              data={analysis.missingSkills}
               type="skill"
             />
-            
-            <AnalysisSection 
-              title="Content Improvements" 
-              icon={<Lightbulb size={20} />} 
-              colorClass="text-amber-600" 
-              data={analysis.contentSuggestions} 
+
+            <AnalysisSection
+              title="Content Improvements"
+              icon={<Lightbulb size={20} />}
+              colorClass="text-amber-600"
+              data={analysis.contentSuggestions}
               type="suggestion"
             />
 
-            <AnalysisSection 
-              title="ATS Optimization" 
-              icon={<CheckCircle2 size={20} />} 
-              colorClass="text-green-600" 
-              data={analysis.atsSuggestions} 
+            <AnalysisSection
+              title="ATS Optimization"
+              icon={<CheckCircle2 size={20} />}
+              colorClass="text-green-600"
+              data={analysis.atsSuggestions}
               type="tip"
             />
           </div>
