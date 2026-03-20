@@ -4,32 +4,21 @@ import FormData from "form-data";
 import cloudinary from "../config/cloudinary.js";
 import streamifier from "streamifier";
 
-import libre from "libreoffice-convert";
-import { promisify } from "util";
-
-const libreConvert = promisify(libre.convert);
-
 const AI_URL = process.env.AI_SERVICE_URL || "http://localhost:8000";
 
 
-
-//  Convert DOCX -> PDF
-
-const convertDocToPDF = async (buffer) => {
-  return await libreConvert(buffer, ".pdf", undefined);
-};
-
-
-
-// Upload to Cloudinary 
-
-const uploadPDFToCloudinary = (buffer, fileName) => {
+const uploadFileToCloudinary = (buffer, fileName) => {
   return new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
       {
         folder: "resumes",
-        resource_type: "image", //  PDF preview
-        public_id: fileName.replace(/\.[^/.]+$/, "")
+
+        //  Supports all file types
+        resource_type: "auto",
+
+        type: "upload",
+        access_mode: "public",
+        public_id: fileName
       },
       (error, result) => {
         if (error) reject(error);
@@ -43,7 +32,33 @@ const uploadPDFToCloudinary = (buffer, fileName) => {
 
 
 
-//  Analyze Resume WITH JD
+const createPreviewUrl = (fileUrl, publicId, mimeType) => {
+
+  // ---------- PDF ----------
+  if (mimeType === "application/pdf") {
+    return cloudinary.url(publicId, {
+      resource_type: "image",
+      page: 1,
+      format: "png"
+    });
+  }
+
+
+  if (
+    mimeType ===
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  ) {
+    return `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+  }
+
+  return fileUrl;
+};
+
+
+
+
+//  Analyze Resume WITH Job Description
+
 
 export const analyzeResume = async (req, res) => {
   try {
@@ -63,36 +78,24 @@ export const analyzeResume = async (req, res) => {
       });
     }
 
-    let fileBuffer = req.file.buffer;
-    let fileName = req.file.originalname;
+    const fileBuffer = req.file.buffer;
+    const fileName = req.file.originalname;
+    const mimeType = req.file.mimetype;
 
-    // ---------- Convert DOC/DOCX → PDF ----------
-    if (
-      req.file.mimetype === "application/msword" ||
-      req.file.mimetype ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    ) {
-      fileBuffer = await convertDocToPDF(fileBuffer);
-      fileName = fileName.replace(/\.(doc|docx)$/i, ".pdf");
-    }
-
-    // ---------- Upload PDF to Cloudinary ----------
+    //  Upload 
     const cloudinaryResult =
-      await uploadPDFToCloudinary(fileBuffer, fileName);
+      await uploadFileToCloudinary(fileBuffer, fileName);
 
     const fileUrl = cloudinaryResult.secure_url;
 
-    // Cloudinary preview (first page)
-   const previewUrl = cloudinary.url(
-  cloudinaryResult.public_id,
-  {
-    resource_type: "image",
-    page: 1,      // first page
-    format: "png" // render as image
-  }
-);
+    //  Preview 
+    const previewUrl = createPreviewUrl(
+      fileUrl,
+      cloudinaryResult.public_id,
+      mimeType
+    );
 
-    // ---------- Send to AI Service ----------
+    //  Send to AI Service 
     const formData = new FormData();
     formData.append("resume", fileBuffer, fileName);
     formData.append("jobDescription", jobDescription);
@@ -112,7 +115,7 @@ export const analyzeResume = async (req, res) => {
 
     const aiAnalysis = aiResponse.data.analysis;
 
-    // ---------- Save to Database ----------
+    //  Save to Database 
     const analysis = await Analysis.create({
       userId: req.user.id,
 
@@ -144,11 +147,14 @@ export const analyzeResume = async (req, res) => {
 };
 
 
-// ======================================================
-// 🔥 Analyze Resume ONLY
-// ======================================================
+
+
+//  Analyze Resume ONLY
+
+
 export const analyzeResumeOnly = async (req, res) => {
   try {
+
     if (!req.file) {
       return res.status(400).json({
         success: false,
@@ -156,34 +162,24 @@ export const analyzeResumeOnly = async (req, res) => {
       });
     }
 
-    let fileBuffer = req.file.buffer;
-    let fileName = req.file.originalname;
+    const fileBuffer = req.file.buffer;
+    const fileName = req.file.originalname;
+    const mimeType = req.file.mimetype;
 
-    // ---------- Convert DOC/DOCX → PDF ----------
-    if (
-      req.file.mimetype === "application/msword" ||
-      req.file.mimetype ===
-        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    ) {
-      fileBuffer = await convertDocToPDF(fileBuffer);
-      fileName = fileName.replace(/\.(doc|docx)$/i, ".pdf");
-    }
-
-    // ---------- Upload PDF ----------
+    // Upload 
     const cloudinaryResult =
-      await uploadPDFToCloudinary(fileBuffer, fileName);
+      await uploadFileToCloudinary(fileBuffer, fileName);
 
     const fileUrl = cloudinaryResult.secure_url;
-     const previewUrl = cloudinary.url(
-  cloudinaryResult.public_id,
-  {
-    resource_type: "image",
-    page: 1,      // first page
-    format: "png" // render as image
-  }
-);
 
-    // ---------- Send to AI ----------
+    // ---------- Preview ----------
+    const previewUrl = createPreviewUrl(
+      fileUrl,
+      cloudinaryResult.public_id,
+      mimeType
+    );
+
+    //  Send to AI
     const formData = new FormData();
     formData.append("resume", fileBuffer, fileName);
 
@@ -202,7 +198,7 @@ export const analyzeResumeOnly = async (req, res) => {
 
     const aiAnalysis = response.data.analysis;
 
-    // ---------- Save ----------
+    //  Save
     const analysis = await Analysis.create({
       userId: req.user.id,
 
