@@ -1,3 +1,14 @@
+import nltk
+import os
+
+nltk_data_path = "/opt/render/nltk_data"
+
+os.makedirs(nltk_data_path, exist_ok=True)
+
+nltk.download("wordnet", download_dir=nltk_data_path)
+nltk.download("omw-1.4", download_dir=nltk_data_path)
+
+nltk.data.path.append(nltk_data_path)
 from fastapi import FastAPI, File, UploadFile, Form
 import pdfplumber
 from docx import Document
