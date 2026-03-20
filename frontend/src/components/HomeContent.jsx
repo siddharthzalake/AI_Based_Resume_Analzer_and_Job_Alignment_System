@@ -6,7 +6,7 @@ export default function HomeContent() {
   return (
     <div>
 
-      {/* HERO SECTION — Main landing call-to-action */}
+      {/* HERO SECTION*/}
       <section className="pt-20 pb-16 px-4 text-center">
 
         {/* Small AI badge */}
@@ -146,9 +146,9 @@ export default function HomeContent() {
 }
 
 
-// ======================================================
+
 // Reusable Feature Card Component
-// ======================================================
+
 function FeatureCard({ icon, title, desc }) {
   return (
     // Static presentational component (no state)
