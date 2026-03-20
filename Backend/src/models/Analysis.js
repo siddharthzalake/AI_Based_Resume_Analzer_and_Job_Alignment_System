@@ -18,7 +18,7 @@ const analysisSchema = new mongoose.Schema(
     jobRole: String,
     jobDescription: String,
 
-    // ⭐ NEW HYBRID SCORES
+    //  NEW HYBRID SCORES
     scores: {
       keywordMatch: Number,
       semanticScore: Number,
@@ -27,14 +27,13 @@ const analysisSchema = new mongoose.Schema(
       overallScore: Number
     },
 
-    // ⭐ AI INSIGHTS
+    // AI INFO
     missingSkills: [String],
 
     contentSuggestions: [String],
 
     atsSuggestions: [String],
 
-    toneFeedback: String
   },
   { timestamps: true }
 );
